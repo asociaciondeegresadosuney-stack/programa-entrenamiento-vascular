@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
@@ -84,13 +85,18 @@ if "patient_data" not in st.session_state:
     st.session_state.patient_data = {}
 
 if not st.session_state.authenticated:
-    st.markdown("""
-        <div class="main-header">
-            <h1 style="margin:0; font-size:2.2rem;">Portal de Acceso Exclusivo</h1>
-            <h3 style="margin:0; font-weight:400; color:#E2E8F0; font-size:1.2rem;">Lic. Carlos Pacheco | Fisiología & Salud Vascular</h3>
-            <p class="slogan-tag">Ingrese su Código de Acceso Personalizado para visualizar su programa clínico</p>
-        </div>
-    """, unsafe_allow_html=True)
+    # Encabezado de autenticación con logo corporativo
+    col_l1, col_l2 = st.columns([1, 4])
+    with col_l1:
+        if os.path.exists("assets/logo2.png"):
+            st.image("assets/logo2.png", use_container_width=True)
+    with col_l2:
+        st.markdown("""
+            <div class="main-header" style="padding: 1.2rem;">
+                <h1 style="margin:0; font-size:2rem;">Portal de Acceso Exclusivo</h1>
+                <h3 style="margin:0; font-weight:400; color:#E2E8F0; font-size:1.1rem;">Lic. Carlos Pacheco | Fisiología & Salud Vascular</h3>
+            </div>
+        """, unsafe_allow_html=True)
 
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
@@ -115,12 +121,13 @@ if not st.session_state.authenticated:
 # -----------------------------------------------------------------------------
 patient = st.session_state.patient_data
 
+# BARRA LATERAL CON LOGO 1
 with st.sidebar:
-    try:
+    if os.path.exists("assets/logo1.png"):
         st.image("assets/logo1.png", use_container_width=True)
-    except Exception:
-        st.write("🫀 **Lic. Carlos Pacheco**")
-    
+    else:
+        st.warning("⚠️ No se encontró 'assets/logo1.png'.")
+        
     st.markdown("---")
     st.markdown(f"### 👤 Paciente: {patient['name']}")
     st.markdown(f"🌍 **Ubicación:** {patient['country']}")
@@ -130,13 +137,25 @@ with st.sidebar:
         st.session_state.authenticated = False
         st.rerun()
 
-# Encabezado institucional
-st.markdown(f"""
-    <div class="main-header" style="padding: 1.5rem;">
-        <h1 style="margin:0; font-size:2.2rem;">Programa Clínico de Entrenamiento Personalizado</h1>
-        <h3 style="margin:0; font-weight:400; color:#E2E8F0; font-size:1.1rem;">Bienvenido(a), {patient['name']} | Monitoreo Hemodinámico Transfronterizo</h3>
-    </div>
-""", unsafe_allow_html=True)
+# ENCABEZADO PRINCIPAL CON LOGO 2
+header_col1, header_col2 = st.columns([1, 4])
+
+with header_col1:
+    if os.path.exists("assets/logo2.png"):
+        st.image("assets/logo2.png", use_container_width=True)
+    else:
+        st.markdown("<div style='text-align:center; padding:20px; border: 2px dashed #0A2540; border-radius:10px;'><b>🖼️ Logo Principal</b></div>", unsafe_allow_html=True)
+
+with header_col2:
+    st.markdown(f"""
+        <div class="main-header" style="margin-bottom:0; padding: 1.5rem;">
+            <h1 style="margin:0; font-size:2.2rem;">Programa Clínico de Entrenamiento</h1>
+            <h3 style="margin:0; font-weight:400; color:#E2E8F0; font-size:1.1rem;">Bienvenido(a), {patient['name']} | Monitoreo Transfronterizo</h3>
+            <p class="slogan-tag" style="margin-bottom:0;">Lic. Carlos Pacheco | Fisiología & Salud Vascular</p>
+        </div>
+    """, unsafe_allow_html=True)
+
+st.markdown("<br>", unsafe_allow_html=True)
 
 # Pestañas de navegación del programa
 tab1, tab2, tab3, tab4 = st.tabs([
@@ -197,7 +216,6 @@ with tab2:
                 <p>Técnica fundamental para estimular la liberación de óxido nítrico antes de cualquier actividad física.</p>
             </div>
         """, unsafe_allow_html=True)
-        # Video embebido de demostración (YouTube estándar de referencia médica)
         st.video("https://www.youtube.com/watch?v=5qap5aO4i9A")
 
     with v_col2:
@@ -253,7 +271,7 @@ with tab4:
     st.header("Soporte Directo con el Especialista")
     st.write("¿Tiene dudas sobre su rutina o sus valores de presión arterial? Conéctese directamente vía WhatsApp desde cualquier lugar de Latinoamérica.")
 
-    msg_wa = urllib.parse.quote(f"Hola Lic. Carlos Pacheco, le escribo desde {patient['country']}. Soy el paciente {patient['name']} (Código: {input_code}) y tengo una consulta sobre mi programa de entrenamiento.")
+    msg_wa = urllib.parse.quote(f"Hola Lic. Carlos Pacheco, le escribo desde {patient['country']}. Soy el paciente {patient['name']} y tengo una consulta sobre mi programa de entrenamiento.")
     wa_link = f"https://wa.me/584120582064?text={msg_wa}"
 
     st.markdown(f"""
